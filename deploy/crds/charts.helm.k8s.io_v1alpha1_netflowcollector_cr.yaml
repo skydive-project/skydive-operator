@@ -1,0 +1,24 @@
+apiVersion: charts.helm.k8s.io/v1alpha1
+kind: NetflowCollector
+metadata:
+  name: netflow-collector
+spec:
+  image:
+    repository: cognetive/skydive
+    tag: 2019.10.15___12.24
+  exporter:
+    enabled: true
+    store:
+      bucket: "default"
+      objectPrefix: "default"
+    write:
+      s3:
+        #endpoint is a required value, pointing to a working Object Store endpoint Example value - "http://localhost:9000"
+        endpoint: "http://localhost:9000"
+        #installLocalMinio should be set to false. If set to true a default minio OS will be installed locally (in a container) for testing purposes only.
+        installLocalMinio: true
+        region: "default"
+        use_api_key: false
+        api_key: ""
+        access_key: "admin"
+        secret_key: "admin1234"
