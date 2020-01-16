@@ -1,0 +1,151 @@
+###############################################################################
+############################ Skydive ##########################################
+###############################################################################
+
+##################
+## Image variables
+arch:
+  amd64: "2 - No preference"
+  ppc64le: "2 - No preference"
+  s390x: "2 - No preference"
+
+image:
+  repository: skydive/skydive
+  tag: "0.24.0"
+  secretName: ""
+  imagePullPolicy: IfNotPresent
+
+##################
+## Resources
+resources:
+  limits:
+    cpu: 2000m
+    memory: 8192Mi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+##################
+## Service variables
+service:
+  name: skydive
+  port: 8082
+  type: NodePort
+
+etcd:
+  port: 12379
+
+analyzer:
+  topology:
+    fabric: "TOR1->*[Type=host]/eth0"
+
+agent:
+  topology:
+    probes: "ovsdb docker runc"
+
+## env variables
+env: []
+
+###################
+## Elastic search image 
+elasticsearch:
+  image:
+    repository: "elastic/elasticsearch"
+    tag: "5.5.1"
+
+##################
+## Data / Storage
+##
+## - Persistence disables by default
+persistence:
+  enabled: false
+  useDynamicProvisioning: false
+
+dataVolume:
+  name: "datavolume"
+  existingClaimName: ""
+  storageClassName: ""
+  size: 10Gi
+
+storage:
+  flows:
+    indicesToKeep: 10
+    indexEntriesLimit: 10000
+  topology:
+    indicesToKeep: 10
+    indexEntriesLimit: 10000
+  elasticsearch:
+    port: 9200
+    host: 127.0.0.1
+
+exporter:
+  enabled: false
+  image:
+    repository: docker.io/bluesecure/skydive-exporter
+    tag: 1
+  store:
+    bucket: "default"
+    objectPrefix: "default"
+    buffered:
+      max_flows_per_object: 60000
+  write:
+    s3:
+      #endpoint is a required value, pointing to a working Object Store endpoint Example value - "http://localhost:9000"
+      endpoint: "http://127.0.0.1:9000"
+      #installLocalMinio should be set to false if using an external endpoint. If set to true a default minio OS will be installed locally (in a container).
+      #the below minioImage, minioImageTag - are rellevant only in case of installLocalMinio=true - for the default case for testing purposes
+      installLocalMinio: true
+      minioImage: "docker.io/bitnami/minio"
+      minioImageTag: "2019.7.31-debian-9-r1"
+      region: "default"
+      # if use_api_key is set to true - api_key is a required value. Else fill in the access_key and secret_key
+      use_api_key: false
+      api_key: ""
+      # if use_api_key is set to false - fill in the rellevant access_key and secret_key of the used object store
+      access_key: "admin"
+      secret_key: "admin1234"
+
+  env_exporter:
+    # Maximum number of flows per object
+    - name: SKYDIVE_PIPELINE_STORE_BUFFERED_MAX_FLOWS_PER_OBJECT
+      value: "60000"
+
+    # Maximum time period for object
+    - name: SKYDIVE_PIPELINE_STORE_BUFFERED_MAX_SECONDS_PER_OBJECT
+      value: "60"
+
+    - name: SKYDIVE_PIPELINE_STORE_BUFFERED_MAX_FLOW_ARRAY_SIZE
+      value: "100000"
+
+    # New stream (folder) is opened every such period
+    - name: SKYDIVE_PIPELINE_STORE_BUFFERED_MAX_SECONDS_PER_STREAM
+      value: "86400"
+
+  env:
+    # For debug purposes
+    - name: SKYDIVE_LOGGING_LEVEL
+      value: "INFO"
+
+    # the rate in which the agents transfer flow updates to the analyzer
+    # Flows to be updated every 30 seconds (thus, every 60 seconds to defender)
+    - name: SKYDIVE_FLOW_UPDATE
+      value: "30"
+
+    # ANALYZER_STARTUP_CAPTURE_GREMLIN invoke at startup capturing in selected nodes (sets automatic capture on all but he loopback nodes)
+    - name: SKYDIVE_ANALYZER_STARTUP_CAPTURE_GREMLIN
+      value: "G.V().has('Name', NE('lo'))"
+
+    #capture all but skydive (8082)
+    - name: SKYDIVE_ANALYZER_STARTUP_CAPTURE_BPF
+      value: "not (tcp dst port 8082)"
+
+    # DEFAULT_LAYER_KEY_MODE - the layers used to identify a unique flow.
+    - name: SKYDIVE_FLOW_DEFAULT_LAYER_KEY_MODE
+      value: "L3"
+
+    # use pcap userland capture. Not very efficient but works on all linux kernel version
+    - name: SKYDIVE_ANALYZER_STARTUP_CAPTURE_TYPE
+      value: "pcap"
+
+    - name: SKYDIVE_AGENT_CAPTURE_SYN
+      value: "True"

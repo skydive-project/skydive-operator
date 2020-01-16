@@ -1,0 +1,11 @@
+{{- if .Values.exporter.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skydive-exporter-s3-configuration
+data:
+  endpoint: {{ .Values.exporter.write.s3.endpoint }}
+  region: {{ .Values.exporter.write.s3.region }}
+  bucket: {{ .Values.exporter.store.bucket }}
+  objectPrefix: {{ .Values.exporter.store.objectPrefix }}
+{{- end }}
