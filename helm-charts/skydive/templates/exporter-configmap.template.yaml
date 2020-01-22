@@ -8,4 +8,5 @@ data:
   region: {{ .Values.exporter.write.s3.region }}
   bucket: {{ .Values.exporter.store.bucket }}
   objectPrefix: {{ .Values.exporter.store.objectPrefix }}
+  iam_endpoint: {{ .Values.exporter.write.s3.iam_endpoint }}
 {{- end }}

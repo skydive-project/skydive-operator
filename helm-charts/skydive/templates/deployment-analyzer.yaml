@@ -178,12 +178,12 @@ spec:
             secretKeyRef:
               name: "skydive-exporter-secret"
               key: "apikey"
-      {{- end }}
-        - name: SKYDIVE_PIPELINE_CLASSIFY_CLUSTER_NET_MASKS
+        - name: SKYDIVE_PIPELINE_WRITE_S3_IAM_ENDPOINT
           valueFrom:
             configMapKeyRef:
-              name: skydive-configuration
-              key: "netmasks"
+              name: "skydive-exporter-s3-configuration"
+              key: "iam_endpoint"
+      {{- end }} 
         - name: SKYDIVE_PIPELINE_STORE_BUFFERED_DIRNAME
           valueFrom:
             configMapKeyRef:

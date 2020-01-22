@@ -81,8 +81,9 @@ storage:
 exporter:
   enabled: false
   image:
-    repository: docker.io/bluesecure/skydive-exporter
-    tag: 1
+    #skydive/skydive-flow-exporter:master
+    repository: quay.io/sacloud/skydive-exporter
+    tag: 4
   store:
     bucket: "default"
     objectPrefix: "default"
@@ -101,6 +102,8 @@ exporter:
       # if use_api_key is set to true - api_key is a required value. Else fill in the access_key and secret_key
       use_api_key: false
       api_key: ""
+      #the endpoint for api key validatation
+      iam_endpoint: "https://iam.cloud.ibm.com/identity/token"
       # if use_api_key is set to false - fill in the rellevant access_key and secret_key of the used object store
       access_key: "admin"
       secret_key: "admin1234"
@@ -120,6 +123,35 @@ exporter:
     # New stream (folder) is opened every such period
     - name: SKYDIVE_PIPELINE_STORE_BUFFERED_MAX_SECONDS_PER_STREAM
       value: "86400"
+
+    # to turn on autodiscovery of cluster netmasks use "subnet_autodiscovery" value; 
+    # to turn off auto-discovery set the value to "subnet" (which is the default, in case SKYDIVE_PIPELINE_CLASSIFY_TYPE is not passed)
+    - name: SKYDIVE_PIPELINE_CLASSIFY_TYPE
+      value: "subnet_autodiscovery"
+
+    # In case subnet_autodiscovery is set, value should include only the private netmasks.
+    # if autodiscovery is off, set the value to the complete list of netmasks to be used
+    - name: SKYDIVE_PIPELINE_CLASSIFY_CLUSTER_NET_MASKS
+      value: "10.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
+
+    - name: SKYDIVE_PIPELINE_MANGLE_TYPE
+      value: "none"
+
+    # exclude flows that are neither side is within our cluster. This mostly should not happen (because skydive records traffic in the cluster), but should
+    # remove possible non-relevant flows. Other possible values (separated by spaces) internal , ingress , egress  (usually you don't want to exclude them).
+    - name: SKYDIVE_PIPELINE_FILTER_EXCLUDED_TAGS
+      value: "other"
+
+    # This creates the toplevel data element necessary for security advisor data collector. Other possible values are json (array without the toplevel "data"  
+    # element) and csv - but with other formats you can't connect to security advisor
+    - name: SKYDIVE_PIPELINE_ENCODE_TYPE
+      value: "secadvisor"
+
+    # compresses type of uploaded objects. with gzip. Possible values gzip, none
+    - name: SKYDIVE_PIPELINE_COMPRESS_TYPE
+      value: "gzip"
+
+
 
   env:
     # For debug purposes

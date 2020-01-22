@@ -52,8 +52,8 @@ The chart can be customized using the following configuration parameters:
 
 | Parameter                            | Description                                     | Default                                                    |
 | ----------------------------------   | ---------------------------------------------   | ---------------------------------------------------------- |
-| `image.repository`                   | Skydive image repository                        | `ibmcom/skydive`                                           |
-| `image.tag`                          | Image tag                                       | `0.22.0`                                                   |
+| `image.repository`                   | Skydive image repository                        | `skydive/skydive`                                           |
+| `image.tag`                          | Image tag                                       | `0.24.0`                                                   |
 | `image.secretName`                   | Image secret for private repository             | Empty                                                      |
 | `image.imagePullPolicy`              | Image pull policy                               | `IfNotPresent`                                             |
 | `resources`                          | CPU/Memory resource requests/limits             | Memory: `8192Mi`, CPU: `2000m`                             |
@@ -75,6 +75,18 @@ The chart can be customized using the following configuration parameters:
 | `dataVolume.existingClaimName`       | Provide an existing PersistentVolumeClaim       | `nil`                                                      |
 | `dataVolume.storageClassName`        | Storage class of backing PVC                    | `nil`                                                      |
 | `dataVolume.size`                    | Size of data volume                             | `10Gi`                                                     |
+| `exporter.enabled`                   | Export netflow data into Object Storage         | `false`                                                    |
+| `exporter.write.s3.endpoint`         | Endpoint of the Object Storage to be used       | `http://127.0.0.1:9000`                                    |
+| `exporter.write.s3.installLocalMinio`| Install default Minio Object Storage locally    | `true`                                                     |
+| `exporter.write.s3.region`           | Object Store region                             | `default`                                                  |
+| `exporter.write.s3.use_api_key`      | Use an api key for Object Store autentication   | `false`                                                    |
+| `exporter.write.s3.api_key`          | api key for Object Store autentication          | Empty                                                      |
+| `exporter.write.s3.access_key`       | access key for Object Store autentication       | `admin`                                                    |
+| `exporter.write.s3.secret_key`       | secret key for Object Store autentication       | `admin1234`                                                |
+| `exporter.store.bucket`              | bucket name to be used in Object Store          | `default`                                                  |
+| `exporter.store.objectPrefix`        | prefix of stroed objects                        | `default`                                                  |
+| `exporter.write.s3.iam_endpoint`     | endpoint for api key verification               | `https://iam.cloud.ibm.com/identity/token`                 |
+
 
 Specify parameters using `--set key=value[,key=value]` argument to `helm install`
 
@@ -113,6 +125,34 @@ The chart mounts a [Persistent Volume](http://kubernetes.io/docs/user-guide/pers
 To make Elasticsearch work properly the user needs to set kernel setting vm.max_map_count to at least 262144 on each worker node. Please check
 [https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docker.html](https://www.elastic.co/guide/en/elasticsearch/reference/5.5/docker.html)
 
+### Skydive as netflow collector
+Skydive exporter component runs as part of the Skydive analyzer, and stores the collected netflow data into an S3 compatible Object Storage.
+
+1. place the following in a values.yaml file, and set the bucket, objectPrefix, endpoint, region, api_key (or use access key and secret key - then set use_api_key=false) to correct values. Any S3 compatible Object Storage can be used.
+```
+exporter:
+  enabled: true
+  store:
+    bucket: "default"
+    objectPrefix: "default"
+  write:
+    s3:
+      #endpoint is a required value, pointing to a working Object Store endpoint Example value - "http://localhost:9000"
+      endpoint: "http://localhost:9000"
+      #installLocalMinio should be set to false. If set to true a default minio OS will be installed locally (in a container) for testing purposes only.
+      installLocalMinio: false
+      region: "default"
+      use_api_key: true
+      api_key: "api key value"
+      access_key: ""
+      secret_key: ""
+```
+
+2. 
+```bash
+helm install --name my-release --f vlaues.yaml stable/skydive
+```
+
 ## Documentation
 
 Skydive documentation can be found here:
@@ -124,3 +164,8 @@ Skydive documentation can be found here:
 * IRC: #skydive-project on [irc.freenode.net](https://webchat.freenode.net/)
 * Mailing list: [https://www.redhat.com/mailman/listinfo/skydive-dev](https://www.redhat.com/mailman/listinfo/skydive-dev)
 * Issues: [https://github.com/skydive-project/skydive/issues](https://github.com/skydive-project/skydive/issues)
+          [https://github.com/skydive-project/skydive-helm/issues](https://github.com/skydive-project/skydive-helm/issues)
+* Slack
+
+Invite : https://slack.skydive.network
+Workspace : https://skydive-project.slack.com
