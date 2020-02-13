@@ -3,9 +3,6 @@ kind: NetflowCollector
 metadata:
   name: netflow-collector
 spec:
-  image:
-    repository: cognetive/skydive
-    tag: 2019.10.15___12.24
   exporter:
     enabled: true
     store:
