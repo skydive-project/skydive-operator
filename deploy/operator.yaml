@@ -15,7 +15,7 @@ spec:
       serviceAccountName: skydive-operator
       containers:
         - name: skydive-operator
-          image: quay.io/sacloud/skydive-op:v0.0.3
+          image: quay.io/sacloud/skydive-op:v0.0.7
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE

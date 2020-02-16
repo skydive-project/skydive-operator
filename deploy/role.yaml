@@ -47,6 +47,7 @@ rules:
   resources:
   - statefulsets
   - deployments
+  - daemonsets
   verbs:
   - '*'
 - apiGroups:
