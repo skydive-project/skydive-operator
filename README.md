@@ -4,6 +4,13 @@ Skydive is an open source real-time network topology and protocols analyzer foun
 
 * <http://github.com/skydive-project/skydive>
 
+This operator includes two default installation options of Skydive:
+* A full Skydive version
+* Skydive as netflow collector
+
+Each option defines the default parameters required, and can be used as is for testing.
+For production it is adviced to customize the defaults.
+
 This document shows how to install the skydive-operator, and deploy the Skydive different options
 
 ## Pre Requisites
@@ -49,16 +56,18 @@ $ kubectl create -f https://raw.githubusercontent.com/skydive-project/skydive-op
 The commands deploy skydive-operator on the Kubernetes cluster. The operator now will monitor the defined custom resources (netflowcollectors and skydives).
 At this point there are no such actual resources present in the cluster, only definitions of the 2 possible types.
 
-Next an actuall resource can be created - either one of the two defined possible types:
+Next an actuall resource can be created - either one of the two predefined possible types:
+
+* To create a general Skydive resource run:
 ```bash
 kubectl create -f https://raw.githubusercontent.com/skydive-project/skydive-operator/master/deploy/crds/charts.helm.k8s.io_v1alpha1_skydive_cr.yaml
 ```
-or
+* To create Skydive as netflow collector resource run: 
 ```bash
 kubectl create -f https://raw.githubusercontent.com/skydive-project/skydive-operator/master/deploy/crds/charts.helm.k8s.io_v1alpha1_netflowcollector_cr.yaml
 ```
 Note: By running on of the above commands, you instruct the skydive-operator to deploy the selected option of skydive with *default* configuration parameters.
-To customize the configuration parameters, copy the rellevant cr yaml file to your local environment, modify the values and run the create command on the modified file.
+To customize the configuration parameters, copy the rellevant cr yaml file to your local environment, modify the values (see the Configuration section below) and run the create command on the modified file.
 
 ## Uninstalling
 
@@ -102,6 +111,15 @@ The netflowcollector custom resource can be customized using the following confi
 | `exporter.write.s3.secret_key`       | secret key for Object Store autentication       | `admin1234`                                                |
 | `exporter.store.bucket`              | bucket name to be used in Object Store          | `default`                                                  |
 | `exporter.store.objectPrefix`        | prefix of stroed objects                        | `default`                                                  |
+
+For testing purpuses the default values can be kept, for production environment 
+- exporter.write.s3.installLocalMinio should be set to false
+- endpoint should be set to an S3 compatible Object Storage
+- the api_key or access_key and secret_key sould be set (set use_api_key to true, if you provide the api_key)
+- set exporter.store.bucket 
+- exporter.store.objectPrefix can be set to simulate a 'directory' location of the collected data inside the bucket.
+
+
 
 The Skydive custom resource can be castomized using the following configuration parameters (and generally using any of the helm configuration parameters defined[https://github.com/skydive-project/skydive-helm](https://github.com/skydive-project/skydive-helm).):
 
