@@ -88,8 +88,8 @@ spec:
   exporter:
     enabled: false
     image:
-      repository: quay.io/sacloud/skydive-exporter
-      tag: 4
+      repository: skydive/skydive-flow-exporter
+      tag: 0.1.2
     store:
       bucket: "default"
       objectPrefix: "default"
