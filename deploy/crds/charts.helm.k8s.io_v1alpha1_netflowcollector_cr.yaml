@@ -5,6 +5,13 @@ metadata:
 spec:
   exporter:
     enabled: true
+    classify:
+      # to turn on autodiscovery of cluster netmasks use "subnet_autodiscovery" value; 
+      # to turn off auto-discovery set the value to "subnet"
+      type: "subnet_autodiscovery"
+      # In case subnet_autodiscovery is set, value should include only the private netmasks.
+      # if autodiscovery is off, set the value to the complete list of netmasks to be used
+      cluster_net_masks: "10.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
     store:
       bucket: "default"
       objectPrefix: "default"

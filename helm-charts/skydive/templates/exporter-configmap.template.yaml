@@ -9,4 +9,6 @@ data:
   bucket: {{ .Values.exporter.store.bucket }}
   objectPrefix: {{ .Values.exporter.store.objectPrefix }}
   iam_endpoint: {{ .Values.exporter.write.s3.iam_endpoint }}
+  netmasksAutodiscoveryType: {{ .Values.exporter.classify.type }}
+  netmasks: {{ .Values.exporter.classify.cluster_net_masks }}
 {{- end }}

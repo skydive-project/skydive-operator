@@ -197,6 +197,16 @@ spec:
             configMapKeyRef:
               name: "skydive-exporter-s3-configuration"
               key: "region"
+        - name: SKYDIVE_PIPELINE_CLASSIFY_TYPE
+          valueFrom:
+            configMapKeyRef:
+              name: "skydive-exporter-s3-configuration"
+              key: "netmasksAutodiscoveryType"
+        - name: SKYDIVE_PIPELINE_CLASSIFY_CLUSTER_NET_MASKS
+          valueFrom:
+            configMapKeyRef:
+              name: "skydive-exporter-s3-configuration"
+              key: "netmasks"
       {{- if .Values.exporter.env_exporter }}
 {{ toYaml .Values.exporter.env_exporter | indent 8 }}
       {{- end }}

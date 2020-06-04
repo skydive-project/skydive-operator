@@ -111,6 +111,7 @@ The netflowcollector custom resource can be customized using the following confi
 | `exporter.write.s3.secret_key`       | secret key for Object Store autentication       | `admin1234`                                                |
 | `exporter.store.bucket`              | bucket name to be used in Object Store          | `default`                                                  |
 | `exporter.store.objectPrefix`        | prefix of stroed objects                        | `default`                                                  |
+| `exporter.classify.cluster_net_masks`| masks of inner cluster ips (space sepparated), used for classification of netflows to ingress/egress/internal/other | `10.0.0.0/8 172.16.0.0/12 192.168.0.0/16`  
 
 For testing purpuses the default values can be kept, for production environment 
 - exporter.write.s3.installLocalMinio should be set to false
